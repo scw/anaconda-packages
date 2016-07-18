@@ -4,20 +4,24 @@
 # platform in line 10.
 
 import requests
+import sys
 from lxml import html
 
-PYTHON_VERSION = '3.4'
+PY_MAJOR = sys.version_info[0]
+PY_MINOR = sys.version_info[1]
+
 PLATFORM = 'Windows'  # Also: 'Linux', 'Mac'
-OUTPUT_FILE = 'anaconda-packages-py{}.txt'.format(
-        PYTHON_VERSION.replace('.', ''))
+OUTPUT_FILE = 'anaconda-packages-py{}{}.txt'.format(
+        PY_MAJOR, PY_MINOR)
 pkg_list_url = 'https://docs.continuum.io/anaconda/' + \
-               'pkg-docs#python-{}'.format(PYTHON_VERSION)
+               'pkg-docs#python-{}-{}'.format(PY_MAJOR, PY_MINOR)
 
 
 r = requests.get(pkg_list_url)
 
 tree = html.fromstring(r.content)
-pkgs_table = tree.xpath('//div[@id="python-3-4"]/table[1]')[0]
+table_path = '//div[@id="python-{}-{}"]/table[1]'.format(PY_MAJOR, PY_MINOR)
+pkgs_table = tree.xpath(table_path)[0]
 
 package_list = []
 # versions of packages
